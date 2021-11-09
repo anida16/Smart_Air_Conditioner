@@ -15,7 +15,6 @@
 #include <ir_Gree.h>
 
 #define BLYNK_PRINT Serial
-
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 
@@ -68,7 +67,9 @@ int fan_speed = 0;
 int send_signal;
 int tempo;
 int tft_display;
-
+const int buttonPin = D6;
+int tempo1;
+int  buttonState = 0;
 char auth[] = "eQrZfi7NwABgPwL_V1OuDid65YxKJimZ";
 
 BLYNK_WRITE(V0)
@@ -132,6 +133,7 @@ void setup(void)
 { ac.begin();
   Serial.begin(115200);
 
+
   Blynk.begin(auth, "Dalvi 2.4GHz", "anishaditi");
   delay(200);
 
@@ -188,7 +190,7 @@ void setup(void)
                   Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
                   Adafruit_BMP280::FILTER_X16,      /* Filtering. */
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
-
+  pinMode(buttonPin, INPUT);
 }
 
 void RTC_display()
@@ -1799,6 +1801,38 @@ void mode_selection() {
 
 }
 
+void button_control()
+{
+  buttonState = digitalRead(buttonPin);
+
+  //Serial.println(digitalRead(button));
+  if (buttonState == 1) {
+    Serial.println("Turn AC ON");
+    ac.on();
+    ac.setFan(3);
+    ac.setMode(kGreeCool);
+    ac.setTemp(27);  // 16-30C
+    ac.setSwingVertical(true, kGreeSwingAuto);
+    ac.setXFan(false);
+    ac.setLight(true);
+    ac.setSleep(true);
+    ac.setTurbo(false);
+  }
+  if (buttonState == 0) {
+    Serial.println("Turn AC OFF");
+    ac.off();
+  }
+  if (tempo1 != buttonState) {
+    Serial.println("The button value changed");
+
+#if SEND_GREE
+    Serial.println("Sending IR command to A/C ...");
+    ac.send();
+#endif  // SEND_GREE
+    printState();
+  }
+  tempo1 = buttonState;
+}
 
 // main loop
 void loop()
@@ -1811,6 +1845,7 @@ void loop()
 
   Room_temperature_display();
   mode_selection();
+  button_control();
 
   delay(1000);    // wait 200ms
 
