@@ -44,7 +44,7 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "time.nist.gov", 19800, 60000);
 unsigned long unix_epoch;
 
-const uint16_t kIrLed = 15;  // ESP8266 GPIO pin to use. Recommended: 4 (D2).
+const uint16_t kIrLed = 10;  // ESP8266 GPIO pin to use. SD3
 IRGreeAC ac(kIrLed);  // Set the GPIO to be used for sending messages.
 
 void printState() {
@@ -71,6 +71,7 @@ const int buttonPin = D6;
 int tempo1;
 int  buttonState = 0;
 char auth[] = "eQrZfi7NwABgPwL_V1OuDid65YxKJimZ";
+int tft_led = D8; //PWM
 
 BLYNK_WRITE(V0)
 {
@@ -191,6 +192,7 @@ void setup(void)
                   Adafruit_BMP280::FILTER_X16,      /* Filtering. */
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
   pinMode(buttonPin, INPUT);
+  pinMode(tft_led, OUTPUT);
 }
 
 void RTC_display()
@@ -1837,6 +1839,23 @@ void button_control()
 // main loop
 void loop()
 {
+
+  //Serial.println(hour(unix_epoch));
+  //Serial.println(minute(unix_epoch));
+
+  if ((hour(unix_epoch)) >= 0 && (hour(unix_epoch)) < 6)
+  {
+    analogWrite(tft_led, 1);
+    //Serial.println("10 min");
+  }
+  else
+  {
+    analogWrite(tft_led, 255);
+    //Serial.println(" below 10 min");
+  }
+  
+
+  
   timeClient.update();
   unix_epoch = timeClient.getEpochTime();   // get UNIX Epoch time
 

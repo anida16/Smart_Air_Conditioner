@@ -34,7 +34,7 @@
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 
-const uint16_t kIrLed = 12;  // ESP8266 GPIO pin to use. Recommended: 4 (D2).
+const uint16_t kIrLed = 10;  // ESP8266 GPIO pin to use. Recommended: 4 (D2).
 IRGreeAC ac(kIrLed);  // Set the GPIO to be used for sending messages.
 
 void printState() {
