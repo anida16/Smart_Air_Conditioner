@@ -1843,7 +1843,7 @@ void loop()
   //Serial.println(hour(unix_epoch));
   //Serial.println(minute(unix_epoch));
 
-  if ((hour(unix_epoch)) >= 0 && (hour(unix_epoch)) < 6)
+  if ((hour(unix_epoch)) >= 0 && (hour(unix_epoch)) < 7)
   {
     analogWrite(tft_led, 1);
     //Serial.println("10 min");
